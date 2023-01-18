@@ -4,6 +4,7 @@ const dotenv = require("dotenv").config()
 const mongoose = require("mongoose")
 const morgan = require("morgan")
 const cors = require("cors")
+const { restart } = require('nodemon')
 const PORT = process.env.PORT
 const DATABASE_URL = process.env.DATABASE_URL
 
@@ -31,8 +32,29 @@ const BookmarkSchema = new mongoose.Schema({
 
 const Bookmarks = mongoose.model("Bookmarks", BookmarkSchema)
 
+// LANDING GET ROUTE
 app.get("/", (req, res) => {
-    res.send("Hello World")
+    res.send("App is Running")
+})
+
+// INDEX ROUTE
+app.get('/bookmarks', async (req, res) => {
+    try{
+        res.json(await Bookmarks.find({}))
+    }
+    catch(error){
+        res.status(400).json(error)
+    }
+})
+
+
+// CREATE ROUTE
+app.post('/bookmarks', async (req, res) => {
+    try{
+        res.json(await Bookmarks.create(req.body))
+    }catch(error){
+        res.status(400).json(error)
+    }
 })
 
 app.listen(PORT, () => {
